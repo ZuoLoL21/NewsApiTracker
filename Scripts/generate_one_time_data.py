@@ -4,8 +4,9 @@ import requests
 from datetime import date, timedelta, datetime
 
 from Libs.Models import ParsedArticleList
-from Libs.PydanticHelpers import save_model
-from Libs.PathHelpers import get_project_path
+from Libs.LocalHelpers.PydanticHelpers import save_model
+from Libs.LocalHelpers.PathHelpers import get_project_path
+
 load_dotenv()
 
 API_KEY = os.getenv("NEWS_API_KEY")
