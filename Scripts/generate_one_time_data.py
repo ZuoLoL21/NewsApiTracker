@@ -1,16 +1,18 @@
 from dotenv import load_dotenv
 import os
 import requests
-from datetime import date, timedelta
+from datetime import date, timedelta, datetime
 
-from Libs.Models import Articles
-
+from Libs.Models import ParsedArticleList
+from Libs.PydanticHelpers import save_model
+from Libs.PathHelpers import get_project_path
 load_dotenv()
 
-API_KEY = os.getenv("NewsAPIKey")
+API_KEY = os.getenv("NEWS_API_KEY")
+QUERY = os.getenv("QUERY_TERM")
+
 URL = "https://newsapi.org/v2/everything"
 
-QUERY = "Cloud Computing"
 DAYS_OF_INTEREST = 1
 
 today = date.today()
@@ -33,6 +35,7 @@ if response.status_code != 200:
 
 data = response.json()
 
-validated_data = Articles.model_validate(data)
+validated_data = ParsedArticleList.model_validate(data)
 
-print(validated_data.model_dump_json(indent=4))
+date = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+save_model(validated_data, get_project_path(f"Storage/{date}.txt"))

@@ -16,7 +16,7 @@ class Article(BaseModel):
     publishedAt:Optional[str]
     content:Optional[str]
 
-class Articles(BaseModel):
+class ParsedArticleList(BaseModel):
     status:str
     totalResults:int
     articles:List[Article]
