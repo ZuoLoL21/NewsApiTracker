@@ -14,23 +14,29 @@ MODEL = ChatOllama(
 )
 
 PROMPT_TEMPLATE = """
-You are required to tell me if the article portrays a topic in a good or bad light
+You are required to determine the article's stance toward a specific topic.
 
-Here is the information
+The article contains:
 Title: {title}
 Description: {description}
-Initial Words: {content}
+Content (possibly truncated): {content}
 
-You must analyse with respect to the following topic
-Topic: {topic}
+Target topic:
+{topic}
 
-Please return on of the following sentiment
-- positive -> the article is biased for the topic
-- negative -> the article is biased against the topic
-- neutral -> the article portrays the topic in an neutral way (objective and comprehensive)
-- unknown -> irrelevant or not enough information to judge
+Instructions:
+- Consider ONLY statements that are directly about the target topic.
+- Ignore overall tone unless it is explicitly directed at the topic.
+- If the topic is mentioned only in passing or not mentioned at all, return "unknown".
+- Do NOT infer sentiment beyond what is stated.
 
-Only return a single word
+Return exactly one label:
+- positive -> the article presents the topic favorably
+- negative -> the article presents the topic unfavorably
+- neutral -> the article discusses the topic in a factual or balanced way
+- unknown -> the topic is irrelevant or insufficiently discussed
+
+Return only the label, no explanation.
 """
 
 class LLMSentimentAnalyzer(SentimentAnalyzer):
