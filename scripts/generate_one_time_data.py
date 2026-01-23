@@ -3,6 +3,7 @@ import os
 import requests
 from datetime import date, timedelta, datetime
 
+from consts import QUERY_TERM
 from libs.models import ParsedArticleList
 from libs.local_helpers.pydantic_helpers import save_model
 from libs.local_helpers.path_helpers import get_project_path
@@ -10,7 +11,7 @@ from libs.local_helpers.path_helpers import get_project_path
 load_dotenv()
 
 API_KEY = os.getenv("NEWS_API_KEY")
-QUERY = os.getenv("QUERY_TERM")
+
 
 URL = "https://newsapi.org/v2/everything"
 
@@ -20,7 +21,7 @@ today = date.today()
 query_data = today - timedelta(days=DAYS_OF_INTEREST)
 
 PARAMS = {
-    "q": QUERY,
+    "q": QUERY_TERM,
     "from": query_data.isoformat(),
     "apiKey": API_KEY,
     "language": "en",

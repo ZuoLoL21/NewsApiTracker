@@ -10,7 +10,10 @@ class Sentiment(str, Enum):
     UNKNOWN = "unknown"
 
 class SentimentAnalyzer(ABC):
+    def __init__(self, topic: str):
+        self.topic = topic
+
     @abstractmethod
-    def sentiment_analysis(self, topic: str, context:BaseModel) -> Sentiment:
+    def sentiment_analysis(self, context:dict) -> Sentiment:
         ...
 

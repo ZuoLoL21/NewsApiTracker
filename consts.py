@@ -1,0 +1,1 @@
+QUERY_TERM="Cloud Computing"
