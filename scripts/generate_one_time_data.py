@@ -1,3 +1,5 @@
+import logging
+
 from dotenv import load_dotenv
 import os
 import requests
@@ -8,36 +10,48 @@ from libs.models import ParsedArticleList
 from libs.local_helpers.pydantic_helpers import save_model
 from libs.local_helpers.path_helpers import get_project_path
 
+logger = logging.getLogger(__name__)
+
 load_dotenv()
 
-API_KEY = os.getenv("NEWS_API_KEY")
 
+API_KEY = os.getenv("NEWS_API_KEY")
 
 URL = "https://newsapi.org/v2/everything"
 
 DAYS_OF_INTEREST = 1
 
-today = date.today()
-query_data = today - timedelta(days=DAYS_OF_INTEREST)
 
-PARAMS = {
-    "q": QUERY_TERM,
-    "from": query_data.isoformat(),
-    "apiKey": API_KEY,
-    "language": "en",
-    "sortBy": "publishedAt",
-}
+def main() -> str:
+    today = date.today()
+    query_data = today - timedelta(days=DAYS_OF_INTEREST)
 
-response = requests.get(URL, params=PARAMS)
+    params = {
+        "q": QUERY_TERM,
+        "from": query_data.isoformat(),
+        "apiKey": API_KEY,
+        "language": "en",
+        "sortBy": "publishedAt",
+    }
 
-if response.status_code != 200:
-    print(f"Error: Request failed with status code {response.status_code}")
-    print(response.text)
-    exit(1)
+    response = requests.get(URL, params=params)
 
-data = response.json()
+    if response.status_code != 200:
+        logging.error(f"{response.status_code}\n{response.text}")
+        exit(1)
 
-validated_data = ParsedArticleList.model_validate(data)
+    data = response.json()
 
-date = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
-save_model(validated_data, get_project_path(f"Storage/{date}.txt"))
+    validated_data = ParsedArticleList.model_validate(data)
+
+    filename = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+    save_model(validated_data, get_project_path(f"Storage/{filename}.txt"))
+
+    return filename
+
+if __name__ == "__main__":
+    logging.basicConfig(
+        level=logging.INFO,
+        format="%(levelname)s - %(name)s - %(message)s"
+    )
+    main()

@@ -6,6 +6,8 @@ from pydantic import BaseModel, ValidationError
 
 from libs.sentiment_analysis.base import SentimentAnalyzer, Sentiment
 
+logger = logging.getLogger(__name__)
+
 MODEL = ChatOllama(
     model="llama3.2",
     temperature=0,
@@ -41,7 +43,7 @@ class LLMSentimentAnalyzer(SentimentAnalyzer):
         try:
             validated_input = self.Input.model_validate(context)
         except ValidationError as e:
-            logging.error(f"{context}\n{e}")
+            logger.error(f"{context}\n{e}")
             return Sentiment.UNKNOWN
         return self._sentiment_analysis(self.topic, validated_input)
 
@@ -53,7 +55,7 @@ class LLMSentimentAnalyzer(SentimentAnalyzer):
 
         return_ = MODEL.invoke(prompt).content
 
-        logging.info(f"{prompt}\n {return_}")
+        logger.info(f"{prompt}\n {return_}")
 
         return Sentiment(return_.lower())
 
@@ -62,11 +64,16 @@ def main():
     llm = LLMSentimentAnalyzer("Cloud Computing")
     answer = llm.sentiment_analysis(
         {
-            "title":"Digital Translucency: Privacy is Dying And Authenticity is Your Only Defense",
-            "description":"The era of managing an online image is over. We have entered a period of radical, involuntary transparency where the distinction between a private life and a public persona has effectively collapsed. Whether you are an executive steering a corporation or an i…",
-            "content":"The era of managing an online image is over. We have entered a period of radical, involuntary transparency where the distinction between a private life and a public persona has effectively collapsed.… [+4167 chars]",
+            "title": "Digital Translucency: Privacy is Dying And Authenticity is Your Only Defense",
+            "description": "The era of managing an online image is over. We have entered a period of radical, involuntary transparency where the distinction between a private life and a public persona has effectively collapsed. Whether you are an executive steering a corporation or an i…",
+            "content": "The era of managing an online image is over. We have entered a period of radical, involuntary transparency where the distinction between a private life and a public persona has effectively collapsed.… [+4167 chars]",
         },
     )
 
+
 if __name__ == "__main__":
+    logging.basicConfig(
+        level=logging.INFO, format="%(levelname)s - %(name)s - %(message)s"
+    )
+
     main()
