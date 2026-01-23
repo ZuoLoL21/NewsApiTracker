@@ -3,6 +3,6 @@
 .venv
 .depreciated
 
-data
+services/data
 
 *.txt
