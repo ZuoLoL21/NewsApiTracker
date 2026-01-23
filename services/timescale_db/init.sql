@@ -4,7 +4,6 @@
       id SERIAL,
       topic VARCHAR(255) NOT NULL,
       published_at TIMESTAMPTZ NOT NULL,
-      source_id VARCHAR(255),
       source_name VARCHAR(255),
       author VARCHAR(255),
       title TEXT,
