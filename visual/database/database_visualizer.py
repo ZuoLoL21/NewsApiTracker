@@ -94,7 +94,7 @@ def fetch_approval_rate_over_time(start_date, end_date, topics, time_bucket):
                 ROUND(100.0 * SUM(CASE WHEN sentiment = 'positive' THEN 1 ELSE 0 END) /
                       NULLIF(SUM(CASE WHEN sentiment IN ('positive', 'negative', 'neutral') THEN 1 ELSE 0 END), 0), 2) AS approval_rate
             FROM articles
-            WHERE published_at BETWEEN %s AND %s
+            WHERE published_at::date BETWEEN %s AND %s
                 AND topic = ANY(%s)
                 AND sentiment IN ('positive', 'negative', 'neutral')
             GROUP BY time_bucket
@@ -120,7 +120,7 @@ def fetch_approval_rate_over_time(start_date, end_date, topics, time_bucket):
 
 @st.cache_data(ttl=300)
 def fetch_sentiment_distribution(start_date, end_date, topics):
-    """Fetch sentiment distribution for all sentiment types."""
+    """Fetch sentiment distribution for positive, negative, and neutral sentiments only."""
     try:
         conn = get_db_connection()
         cursor = conn.cursor()
@@ -130,8 +130,9 @@ def fetch_sentiment_distribution(start_date, end_date, topics):
                 sentiment,
                 COUNT(*) AS count
             FROM articles
-            WHERE published_at BETWEEN %s AND %s
+            WHERE published_at::date BETWEEN %s AND %s
                 AND topic = ANY(%s)
+                AND sentiment IN ('positive', 'negative', 'neutral')
             GROUP BY sentiment
             ORDER BY count DESC
         """
@@ -168,7 +169,7 @@ def fetch_topic_comparison(start_date, end_date):
                 ROUND(100.0 * SUM(CASE WHEN sentiment = 'positive' THEN 1 ELSE 0 END) /
                       NULLIF(SUM(CASE WHEN sentiment IN ('positive', 'negative', 'neutral') THEN 1 ELSE 0 END), 0), 2) AS approval_rate
             FROM articles
-            WHERE published_at BETWEEN %s AND %s
+            WHERE published_at::date BETWEEN %s AND %s
                 AND sentiment IN ('positive', 'negative', 'neutral')
             GROUP BY topic
             ORDER BY approval_rate DESC
@@ -193,7 +194,7 @@ def fetch_topic_comparison(start_date, end_date):
 
 @st.cache_data(ttl=300)
 def fetch_article_volume_over_time(start_date, end_date, topics, time_bucket):
-    """Fetch article volume over time."""
+    """Fetch article volume over time (positive, negative, neutral only)."""
     try:
         conn = get_db_connection()
         cursor = conn.cursor()
@@ -203,8 +204,9 @@ def fetch_article_volume_over_time(start_date, end_date, topics, time_bucket):
                 time_bucket(%s, published_at) AS time_bucket,
                 COUNT(*) AS article_count
             FROM articles
-            WHERE published_at BETWEEN %s AND %s
+            WHERE published_at::date BETWEEN %s AND %s
                 AND topic = ANY(%s)
+                AND sentiment IN ('positive', 'negative', 'neutral')
             GROUP BY time_bucket
             ORDER BY time_bucket
         """
@@ -228,7 +230,7 @@ def fetch_article_volume_over_time(start_date, end_date, topics, time_bucket):
 
 @st.cache_data(ttl=300)
 def fetch_source_analysis(start_date, end_date, topics, limit):
-    """Fetch top N sources with sentiment breakdown."""
+    """Fetch top N sources with sentiment breakdown (positive, negative, neutral only)."""
     try:
         conn = get_db_connection()
         cursor = conn.cursor()
@@ -239,9 +241,10 @@ def fetch_source_analysis(start_date, end_date, topics, limit):
                 sentiment,
                 COUNT(*) AS count
             FROM articles
-            WHERE published_at BETWEEN %s AND %s
+            WHERE published_at::date BETWEEN %s AND %s
                 AND topic = ANY(%s)
                 AND source_name IS NOT NULL
+                AND sentiment IN ('positive', 'negative', 'neutral')
             GROUP BY source_name, sentiment
             HAVING COUNT(*) >= 5
             ORDER BY source_name, sentiment
@@ -531,15 +534,11 @@ def render_metrics_row(df_sentiment, df_volume):
 
     with col2:
         if not df_sentiment.empty:
-            # Calculate overall approval rate
-            valid_sentiments = df_sentiment[df_sentiment['sentiment'].isin(['positive', 'negative', 'neutral'])]
-            if not valid_sentiments.empty:
-                positive_count = valid_sentiments[valid_sentiments['sentiment'] == 'positive']['count'].sum()
-                total_valid = valid_sentiments['count'].sum()
-                approval_rate = (positive_count / total_valid * 100) if total_valid > 0 else 0
-                st.metric("Overall Approval Rate", f"{approval_rate:.2f}%")
-            else:
-                st.metric("Overall Approval Rate", "N/A")
+            # Calculate overall approval rate (df_sentiment already filtered to valid sentiments)
+            positive_count = df_sentiment[df_sentiment['sentiment'] == 'positive']['count'].sum()
+            total_count = df_sentiment['count'].sum()
+            approval_rate = (positive_count / total_count * 100) if total_count > 0 else 0
+            st.metric("Overall Approval Rate", f"{approval_rate:.2f}%")
         else:
             st.metric("Overall Approval Rate", "N/A")
 
