@@ -3,9 +3,9 @@ import os
 import requests
 from datetime import date, timedelta, datetime
 
-from Libs.Models import ParsedArticleList
-from Libs.LocalHelpers.PydanticHelpers import save_model
-from Libs.LocalHelpers.PathHelpers import get_project_path
+from libs.models import ParsedArticleList
+from libs.local_helpers.pydantic_helpers import save_model
+from libs.local_helpers.path_helpers import get_project_path
 
 load_dotenv()
 
