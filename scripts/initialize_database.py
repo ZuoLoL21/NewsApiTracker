@@ -1,22 +1,10 @@
+import datetime
 import logging
-
-import schedule
-import time
-
-from dotenv import load_dotenv
 
 from consts import LOGGING_LOCATION
 from scripts.full_job import job
 
 logger = logging.getLogger(__name__)
-
-
-def run_schedule():
-    schedule.every().day.at("23:55").do(job)
-
-    while True:
-        schedule.run_pending()
-        time.sleep(60)  # wait one minute
 
 
 if __name__ == "__main__":
@@ -30,4 +18,11 @@ if __name__ == "__main__":
     )
     logging.getLogger("httpx").setLevel(logging.WARNING)
 
-    run_schedule()
+    date_to_use = datetime.date.today()
+    try:
+        while True:
+            job(date_to_use=date_to_use)
+            date_to_use -= datetime.timedelta(days=1)
+
+    except Exception as e:
+        logger.error(e)
