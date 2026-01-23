@@ -4,8 +4,6 @@ import sys
 import schedule
 import time
 
-from dotenv import load_dotenv
-
 from consts import LOGGING_LOCATION
 from scripts.full_job import job
 

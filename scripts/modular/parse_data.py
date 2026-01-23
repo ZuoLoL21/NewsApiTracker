@@ -6,9 +6,9 @@ from libs.db_helpers import add_to_db
 from libs.models import ParsedArticleList
 from libs.local_helpers.path_helpers import get_project_path
 from libs.local_helpers.pydantic_helpers import load_model
+from libs.sentiment_analysis import get_sentiment_analyzer
 from libs.sentiment_analysis.base import SentimentAnalyzer, Sentiment
-from libs.sentiment_analysis.llm import LLMSentimentAnalyzer
-from consts import DEFAULT_TOPIC
+from consts import DEFAULT_TOPIC, SENTIMENT_ANALYSIS_MODEL
 
 logger = logging.getLogger(__name__)
 load_dotenv()
@@ -19,7 +19,7 @@ def _retry_unknown(article) -> Sentiment:
 
 
 def process(model:ParsedArticleList, topic:str) -> None:
-    sentiment_analyser: SentimentAnalyzer = LLMSentimentAnalyzer(DEFAULT_TOPIC)
+    sentiment_analyser: SentimentAnalyzer = get_sentiment_analyzer(SENTIMENT_ANALYSIS_MODEL.value, DEFAULT_TOPIC)
 
     for article in model.articles:
         answer = sentiment_analyser.sentiment_analysis(article.model_dump())

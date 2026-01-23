@@ -69,6 +69,7 @@ def main():
             "content": "The era of managing an online image is over. We have entered a period of radical, involuntary transparency where the distinction between a private life and a public persona has effectively collapsed.… [+4167 chars]",
         },
     )
+    print(answer)
 
 
 if __name__ == "__main__":

@@ -46,6 +46,6 @@ if __name__ == "__main__":
     logging.basicConfig(
         level=logging.INFO, format="%(levelname)s - %(name)s - %(message)s"
     )
-    returned_data = scrape(DEFAULT_TOPIC)
+    returned_data = scrape(DEFAULT_TOPIC, date.today())
     filename = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
     save_model(returned_data, get_project_path(f".examples/{filename}.txt"))
