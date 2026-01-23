@@ -13,9 +13,15 @@ LABEL_TO_SENTIMENT = {
     "Positive": Sentiment.POSITIVE,
     "Negative": Sentiment.NEGATIVE,
 }
+RELEVANCE_THRESHOLD = 0.6
+
 class ABSASentimentAnalyzer(SentimentAnalyzer):
     def __init__(self, topic: str):
         super().__init__(topic)
+        self.relevance_model = pipeline(
+            "text-classification",
+            model="cross-encoder/nli-deberta-v3-base",
+        )
         self.model = pipeline(
             "text-classification", model="yangheng/deberta-v3-large-absa-v1.1", use_fast=False
         )
@@ -34,12 +40,14 @@ class ABSASentimentAnalyzer(SentimentAnalyzer):
         return self._sentiment_analysis(self.topic, validated_input)
 
     def _sentiment_analysis(self, topic: str, context: Input) -> Sentiment:
+        prompt = f"Title: {context.title}\nDescription: {context.description}\nInitial Words: {context.content}"
+
+        relevance = self._is_relevant(prompt, topic)
+        if not relevance:
+            return Sentiment.UNKNOWN
+
         result = self.model(
-            f"""
-Title: {context.title}
-Description: {context.description}
-Initial Words: {context.content}
-                """,
+            prompt,
             text_pair=topic,
         )
 
@@ -47,13 +55,35 @@ Initial Words: {context.content}
 
         return LABEL_TO_SENTIMENT[result[0]["label"]]
 
+    def _is_relevant(self, text: str, topic: str, threshold: float = RELEVANCE_THRESHOLD) -> bool:
+        class Output(BaseModel):
+            label: str
+            score: float
+        hypothesis = f"The article discusses {topic}."
+
+        output = self.relevance_model({"text": text, "text_pair": hypothesis})
+        output = Output.model_validate(output)
+
+        if output.label == "contradiction":
+            return False
+        if output.label == "neutral" and output.score >= threshold:
+            return False
+        return True
+
 def main():
     sa = ABSASentimentAnalyzer("Cloud Computing")
+    # answer = sa.sentiment_analysis(
+    #     {
+    #         "title": "Digital Translucency: Privacy is Dying And Authenticity is Your Only Defense",
+    #         "description": "The era of managing an online image is over. We have entered a period of radical, involuntary transparency where the distinction between a private life and a public persona has effectively collapsed. Whether you are an executive steering a corporation or an i…",
+    #         "content": "The era of managing an online image is over. We have entered a period of radical, involuntary transparency where the distinction between a private life and a public persona has effectively collapsed.… [+4167 chars]",
+    #     },
+    # )
     answer = sa.sentiment_analysis(
         {
-            "title": "Digital Translucency: Privacy is Dying And Authenticity is Your Only Defense",
-            "description": "The era of managing an online image is over. We have entered a period of radical, involuntary transparency where the distinction between a private life and a public persona has effectively collapsed. Whether you are an executive steering a corporation or an i…",
-            "content": "The era of managing an online image is over. We have entered a period of radical, involuntary transparency where the distinction between a private life and a public persona has effectively collapsed.… [+4167 chars]",
+            "title": "A cow moo-ed yesterday",
+            "description": "A cow recently moo-ed in the downtown area of London's farms",
+            "content": "A cow recently moo-ed in the downtown area of London's farms, spectators state that they were absolutely flabbergasted",
         },
     )
     print(answer)

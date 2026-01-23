@@ -25,10 +25,10 @@ You must analyse with respect to the following topic
 Topic: {topic}
 
 Please return on of the following sentiment
-- positive -> the article portrays the topic in an positive way 
-- negative -> the article portrays the topic in an negative way 
-- neutral -> the article is indifferent to the topic
-- unknown -> not enough information to accurately judge
+- positive -> the article is biased for the topic
+- negative -> the article is biased against the topic
+- neutral -> the article portrays the topic in an neutral way (objective and comprehensive)
+- unknown -> irrelevant or not enough information to judge
 
 Only return a single word
 """
