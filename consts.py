@@ -1,1 +1,1 @@
-QUERY_TERM="Cloud Computing"
+DEFAULT_TOPIC="Cloud Computing"

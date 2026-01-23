@@ -5,13 +5,12 @@ import os
 import requests
 from datetime import date, timedelta, datetime
 
-from consts import QUERY_TERM
+from consts import DEFAULT_TOPIC
 from libs.models import ParsedArticleList
 from libs.local_helpers.pydantic_helpers import save_model
 from libs.local_helpers.path_helpers import get_project_path
 
 logger = logging.getLogger(__name__)
-
 load_dotenv()
 
 
@@ -22,12 +21,12 @@ URL = "https://newsapi.org/v2/everything"
 DAYS_OF_INTEREST = 1
 
 
-def main() -> str:
+def main(topic) -> str:
     today = date.today()
     query_data = today - timedelta(days=DAYS_OF_INTEREST)
 
     params = {
-        "q": QUERY_TERM,
+        "q": topic,
         "from": query_data.isoformat(),
         "apiKey": API_KEY,
         "language": "en",
@@ -54,4 +53,4 @@ if __name__ == "__main__":
         level=logging.INFO,
         format="%(levelname)s - %(name)s - %(message)s"
     )
-    main()
+    main(DEFAULT_TOPIC)
