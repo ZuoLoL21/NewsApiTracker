@@ -25,10 +25,10 @@ You must analyse with respect to the following topic
 Topic: {topic}
 
 Please return on of the following sentiment
-- positive
-- negative
-- neutral
-- unknown
+- positive -> the article portrays the topic in an positive way 
+- negative -> the article portrays the topic in an negative way 
+- neutral -> the article is indifferent to the topic
+- unknown -> not enough information to accurately judge
 
 Only return a single word
 """
@@ -44,7 +44,7 @@ class LLMSentimentAnalyzer(SentimentAnalyzer):
             validated_input = self.Input.model_validate(context)
         except ValidationError as e:
             logger.error(f"{context}\n{e}")
-            return Sentiment.UNKNOWN
+            return Sentiment.INVALID
         return self._sentiment_analysis(self.topic, validated_input)
 
     def _sentiment_analysis(self, topic: str, context: Input) -> Sentiment:
@@ -55,7 +55,7 @@ class LLMSentimentAnalyzer(SentimentAnalyzer):
 
         return_ = MODEL.invoke(prompt).content
 
-        logger.info(f"{prompt}\n {return_}")
+        logger.debug(f"{prompt}\n {return_}")
 
         return Sentiment(return_.lower())
 

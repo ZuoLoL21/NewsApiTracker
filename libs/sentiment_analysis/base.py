@@ -8,6 +8,7 @@ class Sentiment(str, Enum):
     NEGATIVE = "negative"
     NEUTRAL = "neutral"
     UNKNOWN = "unknown"
+    INVALID = "invalid"
 
 class SentimentAnalyzer(ABC):
     def __init__(self, topic: str):
