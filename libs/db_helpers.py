@@ -10,9 +10,10 @@ import logging
 logger = logging.getLogger(__name__)
 load_dotenv()
 
+
 def get_db_connection():
     """Get a connection to the PostgreSQL/TimescaleDB database."""
-    logger.info("Connecting to " + os.getenv("POSTGRES_DB"))
+    logger.debug("Connecting to " + os.getenv("POSTGRES_DB"))
     return psycopg2.connect(
         host=os.getenv("POSTGRES_HOST", "localhost"),
         port=os.getenv("POSTGRES_PORT", "5432"),

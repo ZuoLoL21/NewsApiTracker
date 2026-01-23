@@ -15,15 +15,12 @@ load_dotenv()
 
 
 API_KEY = os.getenv("NEWS_API_KEY")
-
 URL = "https://newsapi.org/v2/everything"
-
 DAYS_OF_INTEREST = 1
 
 
-def main(topic) -> str:
-    today = date.today()
-    query_data = today - timedelta(days=DAYS_OF_INTEREST)
+def scrape(topic, date_given) -> ParsedArticleList:
+    query_data = date_given - timedelta(days=DAYS_OF_INTEREST)
 
     params = {
         "q": topic,
@@ -42,15 +39,13 @@ def main(topic) -> str:
     data = response.json()
 
     validated_data = ParsedArticleList.model_validate(data)
+    return validated_data
 
-    filename = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
-    save_model(validated_data, get_project_path(f"storage/{filename}.txt"))
-
-    return filename
 
 if __name__ == "__main__":
     logging.basicConfig(
-        level=logging.INFO,
-        format="%(levelname)s - %(name)s - %(message)s"
+        level=logging.INFO, format="%(levelname)s - %(name)s - %(message)s"
     )
-    main(DEFAULT_TOPIC)
+    returned_data = scrape(DEFAULT_TOPIC)
+    filename = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+    save_model(returned_data, get_project_path(f"storage/{filename}.txt"))
