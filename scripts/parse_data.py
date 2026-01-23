@@ -13,6 +13,4 @@ TMP_NAME = "2026-01-19_21-14-29.txt"
 model: ParsedArticleList = load_model(ParsedArticleList, get_project_path(f"Storage/{TMP_NAME}"))
 
 for article in model.articles:
-    print(article.title)
-    print(article.description)
-    print(article.content)
+    break
