@@ -12,7 +12,7 @@ import sys
 from pathlib import Path
 
 # Add parent directory to path for imports
-sys.path.append(str(Path(__file__).parent.parent))
+sys.path.append(str(Path(__file__).parent.parent.parent))
 
 from libs.db_helpers import get_db_connection
 from consts import TOPICS
