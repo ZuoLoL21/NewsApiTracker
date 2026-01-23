@@ -1,9 +1,7 @@
-version: '3.8'
-
 services:
   redis-cache:
     build:
-      dockerfile: redis/redis.Dockerfile
+      dockerfile: services/redis/redis.Dockerfile
     container_name: newsapi-redis-cache
     ports:
       - "6378:6379"
@@ -16,9 +14,9 @@ services:
     image: timescale/timescaledb:latest-pg16
     container_name: news_sentiment_warehouse
     environment:
-      POSTGRES_DB: news_sentiment
-      POSTGRES_USER: your_user
-      POSTGRES_PASSWORD: your_password
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     ports:
       - "5432:5432"
     volumes:
