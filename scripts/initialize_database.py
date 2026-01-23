@@ -1,5 +1,6 @@
 import datetime
 import logging
+import sys
 
 from consts import LOGGING_LOCATION
 from scripts.full_job import job
@@ -13,7 +14,8 @@ if __name__ == "__main__":
             format="%(asctime)s - %(levelname)s - %(name)s - %(message)s",
             datefmt="%Y-%m-%d %H:%M",
             handlers=[
-                logging.FileHandler(LOGGING_LOCATION, mode='a') # Use 'a' for append mode
+                logging.FileHandler(LOGGING_LOCATION, mode='a'),
+                logging.StreamHandler(sys.stdout)
             ]
     )
     logging.getLogger("httpx").setLevel(logging.WARNING)

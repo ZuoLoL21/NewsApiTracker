@@ -1,4 +1,5 @@
 import logging
+import sys
 
 import schedule
 import time
@@ -12,7 +13,7 @@ logger = logging.getLogger(__name__)
 
 
 def run_schedule():
-    schedule.every().day.at("23:55").do(job)
+    schedule.every().day.at("00:05").do(job)
 
     while True:
         schedule.run_pending()
@@ -25,7 +26,8 @@ if __name__ == "__main__":
             format="%(asctime)s - %(levelname)s - %(name)s - %(message)s",
             datefmt="%Y-%m-%d %H:%M",
             handlers=[
-                logging.FileHandler(LOGGING_LOCATION, mode='a') # Use 'a' for append mode
+                logging.FileHandler(LOGGING_LOCATION, mode='a'),
+                logging.StreamHandler(sys.stdout)
             ]
     )
     logging.getLogger("httpx").setLevel(logging.WARNING)
