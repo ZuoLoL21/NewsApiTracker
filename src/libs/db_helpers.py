@@ -3,8 +3,8 @@ from datetime import datetime
 import psycopg2
 from dotenv import load_dotenv
 
-from libs.models import Article
-from libs.sentiment_analysis.base import Sentiment
+from src.libs.models import Article
+from src.libs.sentiment_analysis.base import Sentiment
 import logging
 
 logger = logging.getLogger(__name__)

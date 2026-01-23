@@ -14,8 +14,8 @@ from pathlib import Path
 # Add parent directory to path for imports
 sys.path.append(str(Path(__file__).parent.parent.parent))
 
-from libs.db_helpers import get_db_connection
-from consts import TOPICS
+from src.libs.db_helpers import get_db_connection
+from src.consts import TOPICS
 
 # Page Configuration
 st.set_page_config(

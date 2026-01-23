@@ -2,8 +2,8 @@ import argparse
 import logging
 
 from consts import SCRAPING_END_DATE
-from scripts.initialize_database import fill_database
-from scripts.scheduled_job import run_schedule
+from src.scripts.initialize_database import fill_database
+from src.scripts.scheduled_job import run_schedule
 
 parser = argparse.ArgumentParser(
         prog="News Tracker",

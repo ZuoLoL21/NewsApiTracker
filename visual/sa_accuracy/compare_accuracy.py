@@ -13,9 +13,9 @@ from pydantic import BaseModel
 # Add project root to path for imports
 sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 
-from libs.models import Article
-from libs.sentiment_analysis import ABSASentimentAnalyzer, LLMSentimentAnalyzer
-from libs.sentiment_analysis.base import Sentiment
+from src.libs.models import Article
+from src.libs.sentiment_analysis import ABSASentimentAnalyzer, LLMSentimentAnalyzer
+from src.libs.sentiment_analysis.base import Sentiment
 
 ALL_CLASSES = [
     ("ABSA Sentiment Analyzer", ABSASentimentAnalyzer),

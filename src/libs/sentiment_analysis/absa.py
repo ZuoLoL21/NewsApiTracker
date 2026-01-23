@@ -1,10 +1,9 @@
 import logging
 
-import torch
 from pydantic import BaseModel, ValidationError
 from transformers import pipeline
 
-from libs.sentiment_analysis.base import SentimentAnalyzer, Sentiment
+from src.libs.sentiment_analysis.base import SentimentAnalyzer, Sentiment
 
 logger = logging.getLogger(__name__)
 

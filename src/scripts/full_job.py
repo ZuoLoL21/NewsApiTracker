@@ -1,8 +1,8 @@
 import datetime
 import logging
 
-from consts import TOPICS
-from scripts.modular import scrape, process
+from src.consts import TOPICS
+from src.scripts.modular import scrape, process
 
 logger = logging.getLogger(__name__)
 

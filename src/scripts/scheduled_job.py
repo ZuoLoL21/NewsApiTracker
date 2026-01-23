@@ -4,8 +4,8 @@ import sys
 import schedule
 import time
 
-from consts import LOGGING_LOCATION
-from scripts.full_job import job
+from src.consts import LOGGING_LOCATION
+from src.scripts.full_job import job
 
 logger = logging.getLogger(__name__)
 

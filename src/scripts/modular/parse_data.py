@@ -2,13 +2,13 @@ import logging
 
 from dotenv import load_dotenv
 
-from libs.db_helpers import add_to_db
-from libs.models import ParsedArticleList
-from libs.local_helpers.path_helpers import get_project_path
-from libs.local_helpers.pydantic_helpers import load_model
-from libs.sentiment_analysis import get_sentiment_analyzer
-from libs.sentiment_analysis.base import SentimentAnalyzer, Sentiment
-from consts import DEFAULT_TOPIC, SENTIMENT_ANALYSIS_MODEL
+from src.libs.db_helpers import add_to_db
+from src.libs.models import ParsedArticleList
+from src.libs.local_helpers.path_helpers import get_project_path
+from src.libs.local_helpers.pydantic_helpers import load_model
+from src.libs.sentiment_analysis import get_sentiment_analyzer
+from src.libs.sentiment_analysis.base import SentimentAnalyzer, Sentiment
+from src.consts import DEFAULT_TOPIC, SENTIMENT_ANALYSIS_MODEL
 
 logger = logging.getLogger(__name__)
 load_dotenv()

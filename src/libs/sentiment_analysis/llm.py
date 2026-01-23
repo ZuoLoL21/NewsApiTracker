@@ -4,7 +4,7 @@ from langchain_core.prompts import ChatPromptTemplate
 from langchain_ollama import ChatOllama
 from pydantic import BaseModel, ValidationError
 
-from libs.sentiment_analysis.base import SentimentAnalyzer, Sentiment
+from src.libs.sentiment_analysis.base import SentimentAnalyzer, Sentiment
 
 logger = logging.getLogger(__name__)
 

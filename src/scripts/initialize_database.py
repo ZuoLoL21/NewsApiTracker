@@ -2,8 +2,8 @@ import datetime
 import logging
 import sys
 
-from consts import LOGGING_LOCATION
-from scripts.full_job import job
+from src.consts import LOGGING_LOCATION
+from src.scripts.full_job import job
 
 logger = logging.getLogger(__name__)
 
@@ -11,10 +11,12 @@ def fill_database(ending_date:datetime.date|None=None, days:int=None):
     date_to_use = ending_date if ending_date else datetime.date.today()
     try:
         if days:
+            logger.info("Filling database with {} days".format(days))
             for _ in range(days):
                 job(date_to_use=date_to_use)
                 date_to_use -= datetime.timedelta(days=1)
         else:
+            logger.info("Filling database with as many days as possible")
             while True:
                 job(date_to_use=date_to_use)
                 date_to_use -= datetime.timedelta(days=1)

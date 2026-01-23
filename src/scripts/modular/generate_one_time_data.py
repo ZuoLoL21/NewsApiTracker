@@ -5,10 +5,10 @@ import os
 import requests
 from datetime import date, timedelta, datetime
 
-from consts import DEFAULT_TOPIC
-from libs.models import ParsedArticleList
-from libs.local_helpers.pydantic_helpers import save_model
-from libs.local_helpers.path_helpers import get_project_path
+from src.consts import DEFAULT_TOPIC
+from src.libs.models import ParsedArticleList
+from src.libs.local_helpers.pydantic_helpers import save_model
+from src.libs.local_helpers.path_helpers import get_project_path
 
 logger = logging.getLogger(__name__)
 load_dotenv()

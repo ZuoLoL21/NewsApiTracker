@@ -10,9 +10,9 @@ from dotenv import load_dotenv
 # Add project root to path for imports
 sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 
-from libs.models import Article
-from libs.sentiment_analysis.base import Sentiment
-from scripts.modular.generate_one_time_data import scrape
+from src.libs.models import Article
+from src.libs.sentiment_analysis import Sentiment
+from src.scripts.modular.generate_one_time_data import scrape
 
 logger = logging.getLogger(__name__)
 load_dotenv()
