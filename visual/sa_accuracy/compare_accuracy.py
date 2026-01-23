@@ -1,4 +1,6 @@
 import json
+import sys
+from pathlib import Path
 from typing import List, Dict, Any
 import streamlit as st
 import pandas as pd
@@ -7,6 +9,9 @@ import seaborn as sns
 from sklearn.metrics import confusion_matrix, accuracy_score, precision_recall_fscore_support, classification_report
 
 from pydantic import BaseModel
+
+# Add project root to path for imports
+sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 
 from libs.models import Article
 from libs.sentiment_analysis import ABSASentimentAnalyzer, LLMSentimentAnalyzer
@@ -26,7 +31,7 @@ class Tests(BaseModel):
     topic: str
 
 
-def load_tests(filepath: str = "tests/tests.json") -> Tests:
+def load_tests(filepath: str = "visual/sa_accuracy/tests.json") -> Tests:
     """Load and validate test data from JSON file."""
     with open(filepath) as f:
         tests = json.load(f)
