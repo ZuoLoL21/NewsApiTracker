@@ -6,7 +6,7 @@ services:
     ports:
       - "6378:6379"
     volumes:
-      - .services/data/cache:/data
+      - ./services/data/cache:/data
     restart: unless-stopped
     networks:
       - newsapi-network
@@ -20,10 +20,10 @@ services:
     ports:
       - "${POSTGRES_PORT}:5432"
     volumes:
-      - .services/data/data:/var/lib/postgresql/data
-      - .services/timescale_db/init.sql:/docker-entrypoint-initdb.d/01-init.sql
-      - .services/timescale_db/pg_hba.conf:/docker-entrypoint-initdb.d/pg_hba.conf
-      - .services/timescale_db/setup_pg_hba.sh:/docker-entrypoint-initdb.d/02-setup_pg_hba.sh
+      - ./services/data/data:/var/lib/postgresql/data
+      - ./services/timescale_db/init.sql:/docker-entrypoint-initdb.d/01-init.sql
+      - ./services/timescale_db/pg_hba.conf:/docker-entrypoint-initdb.d/pg_hba.conf
+      - ./services/timescale_db/setup_pg_hba.sh:/docker-entrypoint-initdb.d/02-setup_pg_hba.sh
     restart: unless-stopped
 networks:
   newsapi-network:
