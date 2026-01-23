@@ -200,7 +200,7 @@ def main():
         comparison_data.append(row)
 
     comparison_df = pd.DataFrame(comparison_data)
-    st.dataframe(comparison_df, use_container_width=True)
+    st.dataframe(comparison_df, width='stretch')
 
     # Agreement analysis
     st.markdown("---")

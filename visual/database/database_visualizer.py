@@ -600,7 +600,7 @@ def render_main_dashboard():
 
     fig_approval = create_approval_rate_chart(df_approval, filters['time_bucket_label'])
     if fig_approval:
-        st.plotly_chart(fig_approval, use_container_width=True)
+        st.plotly_chart(fig_approval, width='stretch')
 
     st.markdown("---")
 
@@ -611,14 +611,14 @@ def render_main_dashboard():
         st.header("Sentiment Distribution")
         fig_sentiment = create_sentiment_distribution_chart(df_sentiment, filters['chart_type'])
         if fig_sentiment:
-            st.plotly_chart(fig_sentiment, use_container_width=True)
+            st.plotly_chart(fig_sentiment, width='stretch')
 
     with col2:
         st.header("Topic Comparison")
         df_topics = fetch_topic_comparison(filters['start_date'], filters['end_date'])
         fig_topics = create_topic_comparison_chart(df_topics)
         if fig_topics:
-            st.plotly_chart(fig_topics, use_container_width=True)
+            st.plotly_chart(fig_topics, width='stretch')
 
     st.markdown("---")
 
@@ -626,7 +626,7 @@ def render_main_dashboard():
     st.header("Article Volume Over Time")
     fig_volume = create_volume_chart(df_volume, filters['time_bucket_label'])
     if fig_volume:
-        st.plotly_chart(fig_volume, use_container_width=True)
+        st.plotly_chart(fig_volume, width='stretch')
 
     st.markdown("---")
 
@@ -641,7 +641,7 @@ def render_main_dashboard():
         )
         fig_sources = create_source_analysis_chart(df_sources)
         if fig_sources:
-            st.plotly_chart(fig_sources, use_container_width=True)
+            st.plotly_chart(fig_sources, width='stretch')
 
 
 # Main Execution

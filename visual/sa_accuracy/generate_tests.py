@@ -161,7 +161,7 @@ def main():
 
             if article.urlToImage:
                 try:
-                    st.image(article.urlToImage, use_container_width=True)
+                    st.image(article.urlToImage, width='stretch')
                 except:
                     pass
 
@@ -186,26 +186,26 @@ def main():
             col_a, col_b = st.columns(2)
 
             with col_a:
-                if st.button("✅ Positive", use_container_width=True, type="primary"):
+                if st.button("✅ Positive", width='stretch', type="primary"):
                     save_classification(article, Sentiment.POSITIVE, st.session_state.topic)
                     st.session_state.classified_count += 1
                     st.session_state.current_index += 1
                     st.rerun()
 
-                if st.button("❌ Negative", use_container_width=True, type="primary"):
+                if st.button("❌ Negative", width='stretch', type="primary"):
                     save_classification(article, Sentiment.NEGATIVE, st.session_state.topic)
                     st.session_state.classified_count += 1
                     st.session_state.current_index += 1
                     st.rerun()
 
             with col_b:
-                if st.button("➖ Neutral", use_container_width=True, type="primary"):
+                if st.button("➖ Neutral", width='stretch', type="primary"):
                     save_classification(article, Sentiment.NEUTRAL, st.session_state.topic)
                     st.session_state.classified_count += 1
                     st.session_state.current_index += 1
                     st.rerun()
 
-                if st.button("❓ Unknown", use_container_width=True, type="primary"):
+                if st.button("❓ Unknown", width='stretch', type="primary"):
                     save_classification(article, Sentiment.UNKNOWN, st.session_state.topic)
                     st.session_state.classified_count += 1
                     st.session_state.current_index += 1
@@ -213,7 +213,7 @@ def main():
 
             st.markdown("---")
 
-            if st.button("⏭️ Skip Article", use_container_width=True):
+            if st.button("⏭️ Skip Article", width='stretch'):
                 st.session_state.skipped_count += 1
                 st.session_state.current_index += 1
                 st.rerun()
