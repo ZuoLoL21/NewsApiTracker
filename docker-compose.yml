@@ -1,0 +1,19 @@
+version: '3.8'
+
+services:
+  redis-cache:
+    build:
+      context: .
+      dockerfile: redis/redis.Dockerfile
+    container_name: newsapi-redis-cache
+    ports:
+      - "6378:6379"
+    volumes:
+      - ./data/cache:/data
+    restart: unless-stopped
+    networks:
+      - newsapi-network
+
+networks:
+  newsapi-network:
+    driver: bridge

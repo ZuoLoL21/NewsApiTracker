@@ -45,7 +45,7 @@ def main() -> str:
     validated_data = ParsedArticleList.model_validate(data)
 
     filename = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
-    save_model(validated_data, get_project_path(f"Storage/{filename}.txt"))
+    save_model(validated_data, get_project_path(f"storage/{filename}.txt"))
 
     return filename
 

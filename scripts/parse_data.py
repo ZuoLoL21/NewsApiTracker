@@ -17,7 +17,7 @@ def _retry_unknown(article) -> Sentiment:
 def main(filename:str):
     sentiment_analyser: SentimentAnalyzer = LLMSentimentAnalyzer(QUERY_TERM)
     model: ParsedArticleList = load_model(
-        ParsedArticleList, get_project_path(f"Storage/{filename}")
+        ParsedArticleList, get_project_path(f"storage/{filename}")
     )
 
     for article in model.articles:
@@ -30,6 +30,10 @@ def main(filename:str):
             logger.info(f"Retrying unknown article previous {answer}, current {answer_t}")
 
         logger.info(f"{article.title}\n{answer}")
+
+
+
+
 
 if __name__ == "__main__":
     TMP_NAME = "2026-01-19_21-14-29.txt"
