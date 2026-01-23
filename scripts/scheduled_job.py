@@ -6,7 +6,7 @@ import time
 
 from dotenv import load_dotenv
 
-from consts import TOPICS
+from consts import TOPICS, LOGGING_LOCATION
 from scripts.modular import scrape, process
 
 logger = logging.getLogger(__name__)
@@ -34,8 +34,13 @@ def run_schedule():
 
 if __name__ == "__main__":
     logging.basicConfig(
-        level=logging.INFO, format="%(levelname)s - %(name)s - %(message)s"
+            level=logging.INFO,
+            format="%(asctime)s - %(levelname)s - %(name)s - %(message)s",
+            datefmt="%Y-%m-%d %H:%M",
+            handlers=[
+                logging.FileHandler(LOGGING_LOCATION, mode='a') # Use 'a' for append mode
+            ]
     )
     logging.getLogger("httpx").setLevel(logging.WARNING)
-    
+
     job()
