@@ -46,7 +46,7 @@ if __name__ == "__main__":
     logging.getLogger("httpx").setLevel(logging.WARNING)
 
     parsed_list: ParsedArticleList = load_model(
-        ParsedArticleList, get_project_path(f"storage/{TMP_NAME}")
+        ParsedArticleList, get_project_path(f".examples/{TMP_NAME}")
     )
     process(parsed_list, DEFAULT_TOPIC)
 

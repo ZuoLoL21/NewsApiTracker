@@ -48,4 +48,4 @@ if __name__ == "__main__":
     )
     returned_data = scrape(DEFAULT_TOPIC)
     filename = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
-    save_model(returned_data, get_project_path(f"storage/{filename}.txt"))
+    save_model(returned_data, get_project_path(f".examples/{filename}.txt"))
