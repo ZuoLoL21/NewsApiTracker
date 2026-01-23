@@ -1,0 +1,21 @@
+{
+  "tests":[
+    {
+      "input": {
+        "source": {
+          "id": null,
+          "name": "Martech.zone"
+        },
+        "author": "Douglas Karr",
+        "title": "Digital Translucency: Privacy is Dying And Authenticity is Your Only Defense",
+        "description": "The era of managing an online image is over. We have entered a period of radical, involuntary transparency where the distinction between a private life and a public persona has effectively collapsed. Whether you are an executive steering a corporation or an i…",
+        "url": "https://martech.zone/transparency-authenticity/",
+        "urlToImage": "https://martech.zone/wp-content/uploads/2014/09/digital-translucency-privacy-authenticity-personal-branding.webp",
+        "publishedAt": "2026-01-19T00:54:49Z",
+        "content": "The era of managing an online image is over. We have entered a period of radical, involuntary transparency where the distinction between a private life and a public persona has effectively collapsed.… [+4167 chars]"
+      },
+      "output": "neutral"
+    }
+  ],
+  "topic": "Cloud Computing"
+}

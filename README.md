@@ -1,0 +1,1 @@
+streamlit run visual/database_visualizer.py
