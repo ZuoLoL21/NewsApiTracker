@@ -1,21 +1,24 @@
 import os
 from datetime import datetime
 import psycopg2
+from dotenv import load_dotenv
+
 from libs.models import Article
 from libs.sentiment_analysis.base import Sentiment
 import logging
 
 logger = logging.getLogger(__name__)
-
+load_dotenv()
 
 def get_db_connection():
     """Get a connection to the PostgreSQL/TimescaleDB database."""
+    logger.info("Connecting to " + os.getenv("POSTGRES_DB"))
     return psycopg2.connect(
-        host=os.getenv("DB_HOST", "localhost"),
-        port=os.getenv("DB_PORT", "5432"),
-        database=os.getenv("DB_NAME"),
-        user=os.getenv("DB_USER"),
-        password=os.getenv("DB_PASSWORD")
+        host=os.getenv("POSTGRES_HOST", "localhost"),
+        port=os.getenv("POSTGRES_PORT", "5432"),
+        database=os.getenv("POSTGRES_DB"),
+        user=os.getenv("POSTGRES_USER"),
+        password=os.getenv("POSTGRES_PASSWORD")
     )
 
 
