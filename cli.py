@@ -1,4 +1,5 @@
 import argparse
+import logging
 
 from consts import SCRAPING_END_DATE
 from scripts.initialize_database import fill_database
@@ -14,11 +15,14 @@ parser = argparse.ArgumentParser(
 parser.add_argument('-s', '--scrape', type=int, help="If entered, will scrape as many days as stated (enter -1 for all)")
 parser.add_argument('-m', '--maintain', action='store_true', help="If entered, will maintain the database by running the tool everyday")
 
-if __name__ == '__main__':
+if __name__ == "__main__":
+    logging.basicConfig(
+        level=logging.INFO,
+        format="%(asctime)s - %(levelname)s - %(name)s - %(message)s",
+        datefmt="%Y-%m-%d %H:%M",
+    )
+    logging.getLogger("httpx").setLevel(logging.WARNING)
     args = parser.parse_args()
-
-    print(args)
-    print(parser.print_help())
 
     if args.scrape:
         fill_database(SCRAPING_END_DATE, args.scrape if args.scrape != -1 else None)
