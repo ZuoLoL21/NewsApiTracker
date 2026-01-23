@@ -1,39 +1,25 @@
 import logging
 
-from langchain_core.prompts import ChatPromptTemplate
-from langchain_ollama import ChatOllama
+import torch
 from pydantic import BaseModel, ValidationError
+from transformers import pipeline
 
 from libs.sentiment_analysis.base import SentimentAnalyzer, Sentiment
 
 logger = logging.getLogger(__name__)
 
-MODEL = ChatOllama(
-    model="llama3.2",
-    temperature=0,
-)
+LABEL_TO_SENTIMENT = {
+    "Neutral": Sentiment.NEUTRAL,
+    "Positive": Sentiment.POSITIVE,
+    "Negative": Sentiment.NEGATIVE,
+}
+class ABSASentimentAnalyzer(SentimentAnalyzer):
+    def __init__(self, topic: str):
+        super().__init__(topic)
+        self.model = pipeline(
+            "text-classification", model="yangheng/deberta-v3-large-absa-v1.1", use_fast=False
+        )
 
-PROMPT_TEMPLATE = """
-You are required to tell me if the article portrays a topic in a good or bad light
-
-Here is the information
-Title: {title}
-Description: {description}
-Initial Words: {content}
-
-You must analyse with respect to the following topic
-Topic: {topic}
-
-Please return on of the following sentiment
-- positive -> the article portrays the topic in an positive way 
-- negative -> the article portrays the topic in an negative way 
-- neutral -> the article is indifferent to the topic
-- unknown -> not enough information to accurately judge
-
-Only return a single word
-"""
-
-class LLMSentimentAnalyzer(SentimentAnalyzer):
     class Input(BaseModel):
         title: str
         description: str
@@ -48,27 +34,29 @@ class LLMSentimentAnalyzer(SentimentAnalyzer):
         return self._sentiment_analysis(self.topic, validated_input)
 
     def _sentiment_analysis(self, topic: str, context: Input) -> Sentiment:
-        prompt = ChatPromptTemplate.from_template(PROMPT_TEMPLATE)
-        args = context.model_dump()
-        args['topic'] = topic
-        prompt = prompt.invoke(args)
+        result = self.model(
+            f"""
+Title: {context.title}
+Description: {context.description}
+Initial Words: {context.content}
+                """,
+            text_pair=topic,
+        )
 
-        return_ = MODEL.invoke(prompt).content
+        logger.debug(f"{context.title}\n {result}")
 
-        logger.debug(f"{prompt}\n {return_}")
-
-        return Sentiment(return_.lower())
-
+        return LABEL_TO_SENTIMENT[result[0]["label"]]
 
 def main():
-    llm = LLMSentimentAnalyzer("Cloud Computing")
-    answer = llm.sentiment_analysis(
+    sa = ABSASentimentAnalyzer("Cloud Computing")
+    answer = sa.sentiment_analysis(
         {
             "title": "Digital Translucency: Privacy is Dying And Authenticity is Your Only Defense",
             "description": "The era of managing an online image is over. We have entered a period of radical, involuntary transparency where the distinction between a private life and a public persona has effectively collapsed. Whether you are an executive steering a corporation or an i…",
             "content": "The era of managing an online image is over. We have entered a period of radical, involuntary transparency where the distinction between a private life and a public persona has effectively collapsed.… [+4167 chars]",
         },
     )
+    print(answer)
 
 
 if __name__ == "__main__":
