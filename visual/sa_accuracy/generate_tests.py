@@ -1,4 +1,3 @@
-import json
 import logging
 import sys
 from datetime import date
@@ -14,30 +13,24 @@ from src.libs.models import Article
 from src.libs.sentiment_analysis import Sentiment
 from src.scripts.modular.generate_one_time_data import scrape
 
+# Import topic helpers from current directory
+sys.path.insert(0, str(Path(__file__).parent))
+from topic_helpers import (
+    migrate_legacy_tests,
+    list_available_topics,
+    load_topic_tests,
+    save_topic_tests,
+    Tests
+)
+
 logger = logging.getLogger(__name__)
 load_dotenv()
 
-TESTS_FILE = Path(__file__).parent / "tests.json"
 
-
-def load_existing_tests():
-    """Load existing test cases from tests.json."""
-    if TESTS_FILE.exists():
-        with open(TESTS_FILE, 'r') as f:
-            return json.load(f)
-    return {"topic": "", "tests": []}
-
-
-def save_tests(tests_data):
-    """Save test cases to tests.json."""
-    with open(TESTS_FILE, 'w') as f:
-        json.dump(tests_data, f, indent=2)
-
-
-def article_already_classified(article: Article, existing_tests: dict) -> bool:
+def article_already_classified(article: Article, existing_tests: Tests) -> bool:
     """Check if article URL is already in the test set."""
-    for test in existing_tests.get("tests", []):
-        if test["input"].get("url") == article.url:
+    for test in existing_tests.tests:
+        if test.input.url == article.url:
             return True
     return False
 
@@ -48,6 +41,14 @@ def main():
     st.title("🏷️ Sentiment Test Data Generator")
     st.markdown("Scrape articles and manually classify them for testing sentiment analyzers")
     st.markdown("---")
+
+    # Migrate legacy tests on first run
+    try:
+        migration_msg = migrate_legacy_tests()
+        if migration_msg:
+            st.sidebar.success(migration_msg)
+    except Exception as e:
+        st.sidebar.error(f"Migration error: {e}")
 
     # Initialize session state
     if "scraped_articles" not in st.session_state:
@@ -60,18 +61,64 @@ def main():
     # Sidebar configuration
     st.sidebar.header("Configuration")
 
-    # Load existing tests
-    existing_tests = load_existing_tests()
+    # Topic selection/creation
+    st.sidebar.subheader("Topic Selection")
 
-    st.sidebar.metric("Existing Test Cases", len(existing_tests.get("tests", [])))
-    st.sidebar.metric("Current Topic", existing_tests.get("topic", "Not set"))
+    # Get available topics
+    available_topics = list_available_topics()
 
-    # Topic input
-    topic = st.sidebar.text_input(
-        "Topic to scrape",
-        value=existing_tests.get("topic", "Cloud Computing"),
-        help="Enter the topic you want to scrape articles about"
+    # Display existing topics
+    if available_topics:
+        st.sidebar.markdown("**Available Topics:**")
+        for topic_meta in available_topics:
+            st.sidebar.caption(f"• {topic_meta.topic} ({topic_meta.test_count} tests)")
+
+    # Topic mode selection
+    topic_mode = st.sidebar.radio(
+        "Select mode:",
+        ["Use Existing Topic", "Create New Topic"],
+        help="Choose whether to add tests to an existing topic or create a new one"
     )
+
+    # Get topic based on mode
+    if topic_mode == "Use Existing Topic":
+        if available_topics:
+            topic_names = [t.topic for t in available_topics]
+            selected_topic = st.sidebar.selectbox(
+                "Select topic:",
+                topic_names,
+                help="Choose an existing topic to add more test cases"
+            )
+            topic = selected_topic
+        else:
+            st.sidebar.warning("No existing topics found. Please create a new topic.")
+            topic = st.sidebar.text_input(
+                "New topic name:",
+                value="Cloud Computing",
+                help="Enter the name for your first topic"
+            )
+    else:  # Create New Topic
+        topic = st.sidebar.text_input(
+            "New topic name:",
+            value="",
+            help="Enter a unique name for the new topic"
+        )
+
+        # Validate new topic name
+        if topic and any(t.topic.lower() == topic.lower() for t in available_topics):
+            st.sidebar.error(f"Topic '{topic}' already exists. Please choose a different name or use 'Use Existing Topic' mode.")
+            topic = ""
+
+    # Load tests for selected topic
+    if topic:
+        existing_tests = load_topic_tests(topic)
+        st.sidebar.metric("Test Cases for This Topic", len(existing_tests.tests))
+        st.sidebar.metric("Current Topic", topic)
+    else:
+        existing_tests = Tests(topic="", tests=[])
+        st.sidebar.metric("Test Cases for This Topic", 0)
+
+    st.sidebar.markdown("---")
 
     # Days back input
     days_back = st.sidebar.number_input(
@@ -121,18 +168,26 @@ def main():
         st.info("👈 Configure settings and click 'Scrape Articles' to begin")
 
         # Show existing tests
-        if existing_tests.get("tests"):
+        if existing_tests.tests:
             st.subheader("Existing Test Cases")
-            st.write(f"**Topic:** {existing_tests['topic']}")
+            st.write(f"**Topic:** {existing_tests.topic}")
 
-            for idx, test in enumerate(existing_tests["tests"][:5]):  # Show first 5
-                with st.expander(f"Test {idx + 1}: {test['input']['title'][:60]}..."):
-                    st.write(f"**Sentiment:** {test['output']}")
-                    st.write(f"**Source:** {test['input']['source']['name']}")
-                    st.write(f"**Published:** {test['input']['publishedAt']}")
+            for idx, test in enumerate(existing_tests.tests[:5]):  # Show first 5
+                with st.expander(f"Test {idx + 1}: {test.input.title[:60]}..."):
+                    st.write(f"**Sentiment:** {test.output.value}")
+                    st.write(f"**Source:** {test.input.source.name}")
+                    st.write(f"**Published:** {test.input.publishedAt}")
 
-            if len(existing_tests["tests"]) > 5:
-                st.info(f"... and {len(existing_tests['tests']) - 5} more")
+            if len(existing_tests.tests) > 5:
+                st.info(f"... and {len(existing_tests.tests) - 5} more")
+        elif available_topics:
+            st.subheader("Available Topics")
+            st.write("Select a topic from the sidebar or create a new one to get started.")
+
+            for topic_meta in available_topics:
+                with st.expander(f"{topic_meta.topic} ({topic_meta.test_count} tests)"):
+                    st.write(f"**File:** {topic_meta.file_path.name}")
+                    st.write(f"**Test count:** {topic_meta.test_count}")
 
     elif st.session_state.current_index >= len(st.session_state.scraped_articles):
         st.success("🎉 All articles processed!")
@@ -227,25 +282,24 @@ def main():
 
 
 def save_classification(article: Article, sentiment: Sentiment, topic: str):
-    """Save a classified article to tests.json."""
-    existing_tests = load_existing_tests()
+    """Save a classified article to the topic's test file."""
+    from topic_helpers import Test
 
-    # Update topic if it's different
-    if not existing_tests.get("topic"):
-        existing_tests["topic"] = topic
+    # Load existing tests for this topic
+    existing_tests = load_topic_tests(topic)
 
     # Add the new test case
-    test_case = {
-        "input": article.model_dump(),
-        "output": sentiment.value
-    }
+    test_case = Test(input=article, output=sentiment)
+    existing_tests.tests.append(test_case)
 
-    existing_tests.setdefault("tests", []).append(test_case)
+    # Ensure topic is set
+    if not existing_tests.topic:
+        existing_tests.topic = topic
 
     # Save to file
-    save_tests(existing_tests)
+    save_topic_tests(existing_tests)
 
-    logger.info(f"Classified article: {article.title[:50]}... as {sentiment.value}")
+    logger.info(f"Classified article: {article.title[:50]}... as {sentiment.value} for topic '{topic}'")
 
 
 if __name__ == "__main__":
