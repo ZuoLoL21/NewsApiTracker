@@ -1,8 +1,8 @@
 from src.libs.sentiment_analysis.absa import ABSASentimentAnalyzer
-from src.libs.sentiment_analysis.base import SentimentAnalyzer
+from src.libs.sentiment_analysis.base import Sentiment, SentimentAnalyzer
 from src.libs.sentiment_analysis.llm import LLMSentimentAnalyzer
 
-__all__ = ["ABSASentimentAnalyzer", "LLMSentimentAnalyzer", "get_sentiment_analyzer"]
+__all__ = ["Sentiment", "ABSASentimentAnalyzer", "LLMSentimentAnalyzer", "SentimentAnalyzer", "get_sentiment_analyzer"]
 
 TYPE_TO_SA = {
     "llm": LLMSentimentAnalyzer,
